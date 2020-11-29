@@ -1,0 +1,12 @@
+{
+  "name": "Heads-N-Tails",
+  "version": "1.0.0",
+  "description": "Random game",
+  "main": "index.js",
+  "author": "Andrew Chufistov",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "yargs": "^16.1.1"
+  }
+}

@@ -12,7 +12,6 @@ let result
 let newDate = new Date();
 
 const {year, month, date} = argv;
-console.log(argv)
 
 if (argv._.includes('current')) {
   if (year)
