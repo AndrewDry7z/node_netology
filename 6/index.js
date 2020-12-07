@@ -62,6 +62,8 @@ app.post('/api/books', (req, res) => {
       fileName
   )
   books.push(newBook)
+  res.json(newBook)
+  res.status(201)
 })
 
 app.put('/api/books/:id', (req, res) => {
@@ -70,13 +72,13 @@ app.put('/api/books/:id', (req, res) => {
   const bookIndex = books.findIndex(item => item.id === id)
   if (bookIndex > -1) {
     books[bookIndex] = {
+      ...books[bookIndex],
       title,
       description,
       authors,
       favorite,
       fileCover,
-      fileName,
-      ...books[bookIndex]
+      fileName
     }
     res.json(books[bookIndex])
   } else {
