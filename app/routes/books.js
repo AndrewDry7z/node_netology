@@ -1,12 +1,8 @@
 const express = require('express')
-const cors = require('cors');
-const bodyParser = require('body-parser')
-const {Book} = require('./models')
-
-const app = express()
-app.use(bodyParser.json())
-app.use(cors())
-app.options('*', cors());
+const router = express.Router()
+const {Book} = require('../models')
+const path = require('path')
+const fileMiddleware = require('../middleware/file');
 
 const store = {
   books: []
@@ -21,6 +17,7 @@ for (let item of examples) {
       'some authors',
       'sample text',
       'something.jpg',
+      'file',
       'file'
   )
   store.books.push(newBook)
@@ -28,19 +25,11 @@ for (let item of examples) {
 
 const {books} = store
 
-app.post('/api/user/login', (req, res) => {
-  res.json({
-    id: 1,
-    mail: "test@mail.ru"
-  })
-  res.status(201)
-})
-
-app.get('/api/books', (req, res) => {
+router.get('/', (req, res) => {
   res.json(books)
 })
 
-app.get('/api/books/:id', (req, res) => {
+router.get('/:id', (req, res) => {
   const {id} = req.params
   const bookIndex = books.findIndex(item => item.id === id)
   if (bookIndex > -1) {
@@ -51,7 +40,18 @@ app.get('/api/books/:id', (req, res) => {
   }
 })
 
-app.post('/api/books', (req, res) => {
+router.get('/:id/download', (req, res) => {
+  const {id} = req.params
+  const bookIndex = books.findIndex(item => item.id === id)
+  if (bookIndex > -1) {
+    res.redirect('/public/' + path.basename(books[bookIndex].fileBook))
+  } else {
+    res.status(404);
+    res.json('Nothing found')
+  }
+})
+
+router.post('/', fileMiddleware.single('book'), (req, res) => {
   const {title, description, authors, favorite, fileCover, fileName} = req.body
   const newBook = new Book(
       title,
@@ -61,13 +61,20 @@ app.post('/api/books', (req, res) => {
       fileCover,
       fileName
   )
+
+  if (req.file) {
+    newBook.fileBook = req.file.path
+  } else {
+    res.json(null);
+  }
+
   books.push(newBook)
   res.json(newBook)
   res.status(201)
 })
 
-app.put('/api/books/:id', (req, res) => {
-  const {title, description, authors, favorite, fileCover, fileName} = req.body
+router.put('/:id', fileMiddleware.single('book'), (req, res) => {
+  const {title, description, authors, favorite, fileCover, fileName, fileBook} = req.body
   const {id} = req.params
   const bookIndex = books.findIndex(item => item.id === id)
   if (bookIndex > -1) {
@@ -78,7 +85,8 @@ app.put('/api/books/:id', (req, res) => {
       authors,
       favorite,
       fileCover,
-      fileName
+      fileName,
+      fileBook
     }
     res.json(books[bookIndex])
   } else {
@@ -87,7 +95,7 @@ app.put('/api/books/:id', (req, res) => {
   }
 })
 
-app.delete('/api/books/:id', (req, res) => {
+router.delete('/:id', (req, res) => {
   const {id} = req.params
   const bookIndex = books.findIndex(item => item.id === id)
   if (bookIndex > -1) {
@@ -99,4 +107,4 @@ app.delete('/api/books/:id', (req, res) => {
   }
 })
 
-app.listen(3000);
+module.exports = router;
