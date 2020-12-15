@@ -1,10 +1,10 @@
 {
   "name": "6",
   "version": "1.0.0",
-  "main": "app/index.js",
+  "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "start": "app/node_modules/.bin/nodemon app/index.js"
+    "start": "nodemon index.js"
   },
   "dependencies": {
     "body-parser": "^1.19.0",
