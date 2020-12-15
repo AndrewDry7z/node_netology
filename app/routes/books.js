@@ -1,110 +1,96 @@
 const express = require('express')
+const Book = require("../models/Book");
 const router = express.Router()
-const {Book} = require('../models')
-const path = require('path')
-const fileMiddleware = require('../middleware/file');
-
-const store = {
-  books: []
-}
-
-const examples = ['test', '12345', 'qwerty']
-
-for (let item of examples) {
-  const newBook = new Book(
-      item,
-      `desctiption ${item}`,
-      'some authors',
-      'sample text',
-      'something.jpg',
-      'file',
-      'file'
-  )
-  store.books.push(newBook)
-}
-
+const {store} = require('./api/books')
 const {books} = store
 
 router.get('/', (req, res) => {
-  res.json(books)
+  res.render('index', {
+    title: "Books list",
+    books: books
+  })
+})
+
+router.get('/create', (req, res) => {
+  res.render('create', {
+    title: "Create new book",
+    book: {},
+    params: {
+      method: 'POST',
+      action: '/books/create',
+      enctype: 'application/x-www-form-urlencoded'
+    }
+  })
+})
+
+router.post('/create', (req, res) => {
+  const {title, description} = req.body
+  const newBook = new Book(
+      title,
+      description
+  )
+  books.push(newBook)
+  res.redirect('/books/')
 })
 
 router.get('/:id', (req, res) => {
   const {id} = req.params
   const bookIndex = books.findIndex(item => item.id === id)
   if (bookIndex > -1) {
-    res.json(books[bookIndex])
+    res.render('view', {
+      book: books[bookIndex]
+    })
   } else {
     res.status(404);
     res.json('Nothing found')
   }
 })
 
-router.get('/:id/download', (req, res) => {
+router.get('/:id/edit', (req, res) => {
+  const {id} = req.params
+  const bookIndex = books.findIndex(item => item.id === id)
+  res.render('create', {
+    title: "Edit book",
+    book: books[bookIndex]
+  })
+})
+
+router.get('/:id/delete', (req, res) => {
   const {id} = req.params
   const bookIndex = books.findIndex(item => item.id === id)
   if (bookIndex > -1) {
-    res.redirect('/public/' + path.basename(books[bookIndex].fileBook))
+    books.splice(bookIndex, 1);
+    res.redirect(`/books`);
   } else {
-    res.status(404);
-    res.json('Nothing found')
+    res.status(404).redirect('/404');
   }
 })
 
-router.post('/', fileMiddleware.single('book'), (req, res) => {
-  const {title, description, authors, favorite, fileCover, fileName} = req.body
+router.post('/create', (req, res) => {
+  const {title, description} = req.body
   const newBook = new Book(
       title,
-      description,
-      authors,
-      favorite,
-      fileCover,
-      fileName
+      description
   )
-
-  if (req.file) {
-    newBook.fileBook = req.file.path
-  } else {
-    res.json(null);
-  }
-
   books.push(newBook)
-  res.json(newBook)
-  res.status(201)
+  res.redirect('/books/')
 })
 
-router.put('/:id', fileMiddleware.single('book'), (req, res) => {
-  const {title, description, authors, favorite, fileCover, fileName, fileBook} = req.body
+router.post('/:id/edit', (req, res) => {
   const {id} = req.params
   const bookIndex = books.findIndex(item => item.id === id)
-  if (bookIndex > -1) {
+  const {title, description} = req.body;
+  if (bookIndex !== -1) {
     books[bookIndex] = {
       ...books[bookIndex],
       title,
       description,
-      authors,
-      favorite,
-      fileCover,
-      fileName,
-      fileBook
-    }
-    res.json(books[bookIndex])
+    };
+    res.redirect(`/books/${id}`)
   } else {
-    res.status(404);
+    res.status(404)
     res.json('Nothing found')
   }
 })
 
-router.delete('/:id', (req, res) => {
-  const {id} = req.params
-  const bookIndex = books.findIndex(item => item.id === id)
-  if (bookIndex > -1) {
-    books.splice(bookIndex, 1)
-    res.json(true)
-  } else {
-    res.status(404);
-    res.json('Nothing found')
-  }
-})
-
-module.exports = router;
+module.exports = router

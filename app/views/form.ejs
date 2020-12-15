@@ -1,0 +1,21 @@
+<form method="POST">
+    <fieldset>
+        <label for="inputTitle">Заголовок</label>
+        <input type="text"
+               value="<%= book.title %>"
+               name="title"
+               required
+               id="inputTitle">
+    </fieldset>
+
+    <fieldset>
+        <label for="inputDesc">Описание</label>
+        <textarea
+                rows="3"
+                name="description"
+                id="inputDesc"
+        ><%= book.description %></textarea>
+    </fieldset>
+
+    <button type="submit" class="btn btn-primary">Сохранить</button>
+</form>

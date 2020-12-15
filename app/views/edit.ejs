@@ -1,0 +1,8 @@
+<%- include('./partials/header', {title: title}) %>
+
+<main class="edit">
+    <h1><%= title %></h1>
+    <%- include("form"), {book: book} %>
+</main>
+
+<%- include("./partials/footer") %>
