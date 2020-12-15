@@ -1,6 +1,8 @@
 const express = require('express')
 const cors = require('cors');
 const bodyParser = require('body-parser')
+const router = express.Router()
+const PORT = process.env.PORT || 3000;
 
 const app = express()
 app.use(bodyParser.json());
@@ -19,4 +21,8 @@ app.use('/api/books', ApiBooksRouter);
 app.use('/books', booksRouter);
 app.use('/api/user', userRouter);
 
-app.listen(3000);
+router.get('/', (req, res) => {
+  res.redirect('/books')
+})
+
+app.listen(PORT);
