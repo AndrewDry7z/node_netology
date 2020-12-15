@@ -1,6 +1,7 @@
 const express = require('express')
 const cors = require('cors');
 const bodyParser = require('body-parser')
+const router = express.Router()
 
 const app = express()
 app.use(bodyParser.json());
@@ -18,5 +19,9 @@ app.use('/public', express.static(__dirname+"/public"));
 app.use('/api/books', ApiBooksRouter);
 app.use('/books', booksRouter);
 app.use('/api/user', userRouter);
+
+router.get('/', (req, res) => {
+  res.redirect('/books')
+})
 
 app.listen(3000);
