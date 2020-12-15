@@ -2,6 +2,7 @@ const express = require('express')
 const cors = require('cors');
 const bodyParser = require('body-parser')
 const router = express.Router()
+const PORT = process.env.PORT || 3000;
 
 const app = express()
 app.use(bodyParser.json());
@@ -24,4 +25,4 @@ router.get('/', (req, res) => {
   res.redirect('/books')
 })
 
-app.listen(3000);
+app.listen(PORT);
