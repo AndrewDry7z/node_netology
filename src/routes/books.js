@@ -3,6 +3,7 @@ const Book = require("../models/Book");
 const router = express.Router()
 const {store} = require('./api/books')
 const {books} = store
+const fetch = require('node-fetch');
 
 router.get('/', (req, res) => {
   res.render('index', {
@@ -36,10 +37,16 @@ router.post('/create', (req, res) => {
 router.get('/:id', (req, res) => {
   const {id} = req.params
   const bookIndex = books.findIndex(item => item.id === id)
+
   if (bookIndex > -1) {
-    res.render('view', {
-      book: books[bookIndex]
-    })
+    fetch(`http://localhost:3001/counter/${id}/incr`, {method: 'POST'})
+        .then(res => res.json())
+        .then(body => {
+          res.render('view', {
+            book: books[bookIndex],
+            counter: body.counter
+          })
+        })
   } else {
     res.status(404);
     res.json('Nothing found')

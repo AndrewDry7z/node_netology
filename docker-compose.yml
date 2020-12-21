@@ -1,0 +1,14 @@
+version: '3.7'
+
+services:
+  library:
+    image: andrewdry7z/library
+    restart: always
+    ports:
+      - 3000:3000
+
+  counter:
+    image: andrewdry7z/counter
+    restart: always
+    ports:
+      - 3001:3001
