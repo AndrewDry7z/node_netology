@@ -1,13 +1,12 @@
 <%- include('./partials/header', {title: title}) %>
-
 <main class="books">
     <h1><%= title %></h1>
     <ul class="books-list">
         <% for(let book of books) { %>
         <li class="item">
-            <a class="text-body" href="./<%= book.id %>/"><%= book.title %></a>
-            <a href="./<%= book.id %>/edit" class="btn" role="button">✏</a>
-            <a href="./<%= book.id %>/delete" class="btn" role="button">🗑</a>
+            <a class="text-body" href="/books/<%= book.id %>/"><%= book.title %></a>
+            <a href="/books/<%= book.id %>/edit" class="btn" role="button">✏</a>
+            <a href="/books/<%= book.id %>/delete" class="btn" role="button">🗑</a>
         </li>
         <% } %>
     </ul>
